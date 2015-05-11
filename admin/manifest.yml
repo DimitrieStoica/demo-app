@@ -1,0 +1,7 @@
+applications:
+ - name: twitter-demo
+   memory: 512M
+   brooklyn:
+   - name: twitter-demo
+     location: AWS California
+     service: riak-cluster
