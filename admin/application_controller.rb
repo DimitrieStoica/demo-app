@@ -13,7 +13,7 @@ class ApplicationController < Sinatra::Base
 
   include TwitterHelper
   include DatabaseHelper
-  include HashtagHelped
+  include HashtagHelper
 
   database_connect   = Connect. new
   client_database    = database_connect.connect_to_database
@@ -28,7 +28,7 @@ class ApplicationController < Sinatra::Base
     hashtag = "#{params[:hashtag]}"
     hashtag_state = {"#{params[:hashtag]}" => true}
     look_for_word(hashtag, hashtag_state, client_database)
-    @check_hashtags_status = read_state_for_hashatgs_list(hashtag, client)
+    @check_hashtags_status = read_state_for_hashatgs_list(hashtag, client_database)
     erb :index
   end
 end
