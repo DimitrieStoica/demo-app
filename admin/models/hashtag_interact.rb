@@ -1,20 +1,20 @@
 module HashtagHelper
-  def add_hashtag_to_list(params, client)
-    if is_hashtag_there?(params, client) != true
+  def add_hashtag_to_list(hashtag, hashtag_state, client)
+    if is_hashtag_there?(hashtag, client) != true
+      p "Adding hashtag #{hashtag} to list"
       total_elements = check_total_number_of_elements(client) + 1
       database_write("hashtag_list", "total_elements", total_elements, client)
-      database_write("hashtag_list", "hashtag_" + "#{total_elements}", "#{params[:hashtag]}",client)
-      hashtag_state = look_for_state(params)
-      write_state(hashtag_state, client)
+      database_write("hashtag_list", "hashtag_" + "#{total_elements}", "#{hashtag}",client)
+      write_state(hashtag, hashtag_state, client)
     else
       p 'Hash already in the list'
     end
   end
 
-  def read_state_for_hashatgs_list(params, client)
+  def read_state_for_hashatgs_list(hashtag, client)
     hashtag_list = []
     hashtag_list = check_hashtag_value(client)
-    hashtag_list_to_read = []
+    hashtag_list_to_read = []                                                                                                                                                             [0/1954]
     for element in hashtag_list
       hashtag_list_to_read << read_state(element)
     end
@@ -26,23 +26,19 @@ module HashtagHelper
     database_write("analytics_for_" + "#{params[:hashtag]}", "stop_time", "#{params[:stop_time]}", client)
   end
 
-  def look_for_state(params)
-    value         = "#{params[:hashtag_state]}"
-    hashtag_state = {name => value["name"], search_value => value["search_value"]}
-  end
-
-  def write_state(hashtag_state, client)
-    database_write("search_state", hashtag_state['name'], hashtag_state['search_value'], client)
+  def write_state(hashtag, hashtag_state, client)
+    database_write("search_state", hashtag, hashtag_state[hashtag], client)
   end
 
   def read_state(hashtag)
     database_read("search_state", hashtag, client)
   end
 
-  def is_hashtag_there?(params, client)
+  def is_hashtag_there?(hashtag, client)
     all_registered_hashtags = check_hashtag_value(client)
     for element in all_registered_hashtags
-      if element == "#{params[:hashtag]}"
+      if element == "#{hashtag}"
+        p "#{hashtag} is already in the hashtag list"
         return true
       end
     end
@@ -52,7 +48,7 @@ module HashtagHelper
     if check_total_number_of_elements(client) != false
       result = []
       total_elements = check_total_number_of_elements(client)
-      for element in total_elements
+      for element in 0...total_elements
         result << database_read("hashtag_list", "hashtag_" + "#{element}", client)
       end
       result
@@ -64,8 +60,10 @@ module HashtagHelper
       database_read("hashtag_list", "total_number_of_elements", client)
     rescue StandardError => e
       p 'No elements in hashtag list'
-      database_write("hashtag_list", "total_number_of_elements", "0", client)
+      database_write("hashtag_list", "total_number_of_elements", 0, client)
       false
     end
   end
 end
+
+

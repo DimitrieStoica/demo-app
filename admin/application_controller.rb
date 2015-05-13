@@ -12,7 +12,6 @@ require_relative './models/hashtag_interact'
 class ApplicationController < Sinatra::Base
 
   include TwitterHelper
-  include Sentiment
   include DatabaseHelper
   include HashtagHelped
 
@@ -26,8 +25,10 @@ class ApplicationController < Sinatra::Base
   end
 
   post '/' do
-    look_for_word(params, client_database)
-    @check_hashtags_status = read_state_for_hashatgs_list(params, client)
+    hashtag = "#{params[:hashtag]}"
+    hashtag_state = {"#{params[:hashtag]}" => true}
+    look_for_word(hashtag, hashtag_state, client_database)
+    @check_hashtags_status = read_state_for_hashatgs_list(hashtag, client)
     erb :index
   end
 end
