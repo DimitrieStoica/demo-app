@@ -15,6 +15,9 @@ module DatabaseHelper
   end
 
   def database_write(data_type, data_name, data, client)
+          p data_type
+          p data_name
+          p data
     bucket = client.bucket("#{data_type}")
     obj = Riak::RObject.new(bucket, "#{data_name}")
     obj.content_type = 'application/json'

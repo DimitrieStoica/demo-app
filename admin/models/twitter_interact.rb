@@ -2,40 +2,33 @@ module TwitterHelper
   def look_for_word(hashtag, hashtag_state, client)
     add_hashtag_to_list(hashtag, hashtag_state, client)
     #check how many were there before for the relevant hashtag to continue adding or start from 0
-    if how_many_tweets_are?(hashtag) != false
-      number_of_tweets = how_many_tweets_are?(hashtag)
-      p "There are already #{numbe_of_tweets} for #{hashtag}"
-    else
-      number_of_tweets = 0
-      p "There are no other tweets for #{hashtag}"
-    end
+    p 'i am here'
+    number_of_tweets = how_many_tweets_are?(hashtag, client)
+    p number_of_tweets
+    p 'how many tweets are'
     data_to_read = ['text', 'id']
     p "I am reading #{data_to_read}"
     # creates a bucket that contains all the tweet data that will be saved
     write_data_to_read(data_to_read, client)
 
-#    while hashtag_state[hashtag] != false do
       p "Looking for #{hashtag}"
-      TweetStream::Client.new.track(hashtag) do |status|                                                                                                                                     [2/1918]
-#        if hashtag_state(hashtag) != true
-#          break
-#        else
+    while read_state(hashtag, client) == true
+      TweetStream::Client.new.track(hashtag) do |status|   
         p number_of_tweets
         number_of_tweets = number_of_tweets + 1
         full_data_organisation(status, client, data_to_read)
         database_write("#{bucket_tweet_list(hashtag)}", "#{tweet_list_number(number_of_tweets)}", "#{tweet_list_data(status)}", client)
         #write total number of tweets for specific hashtag
         database_write("total_nr_of_tweets" ,"number_of_tweets_" + hashtag, number_of_tweets, client)
-#        end
+       end
     end
   end
 
-  def how_many_tweets_are?(hashtag)
+  def how_many_tweets_are?(hashtag, client)
     begin
       database_read("total_nr_of_tweets" ,"number_of_tweets_" + "#{hashtag}", client)
-    rescue StandardError => e
-      p "No tweets for #{hashtag}"
-      false
+    rescue Riak::ProtobuffsFailedRequest => e
+      0
     end
   end
 
@@ -54,9 +47,7 @@ module TwitterHelper
 
   def full_data_organisation(status, client, data_to_read)
     for element in data_to_read
-      p element
-      p status.send(element)
- #     database_write("#{status.id}", element, status.user.send(element), client)
+      database_write("#{status.id}", element, status.send(element), client)
     end
   end
 
