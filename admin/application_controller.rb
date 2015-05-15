@@ -27,7 +27,6 @@ class ApplicationController < Sinatra::Base
   post '/home' do
     hashtag = "#{params[:hashtag]}"
     hashtag_state = {"#{params[:hashtag]}" => true}
-    end  
     write_state(hashtag, hashtag_state, client_database)
     look_for_word(hashtag, hashtag_state, client_database)
     erb :index
