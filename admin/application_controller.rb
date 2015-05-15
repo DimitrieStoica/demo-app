@@ -34,7 +34,7 @@ class ApplicationController < Sinatra::Base
   end
 
   get '/state' do
-   @check_hashtags_status = read_state_for_hashatgs_list(hashtag, client_database)
+   @check_hashtags_status = read_state_for_hashatgs_list(client_database)
   end
 
   post '/state' do

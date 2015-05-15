@@ -11,7 +11,7 @@ module HashtagHelper
     end
   end
 
-  def read_state_for_hashatgs_list(hashtag, client)
+  def read_state_for_hashatgs_list(client)
     hashtag_list = []
     hashtag_list = check_hashtag_value(client)
     hashtag_list_to_read = []          
