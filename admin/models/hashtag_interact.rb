@@ -16,7 +16,7 @@ module HashtagHelper
     hashtag_list = check_hashtag_value(client)
     hashtag_list_to_read = []          
     for element in hashtag_list
-      hashtag_list_to_read << hashtag_list_to_read << {"#{element}" => read_state(element, client)}
+      hashtag_list_to_read << hashtag_list_to_read << {"#{element}" => read_state(element, client)}.to_json
     end
     hashtag_list_to_read
   end
