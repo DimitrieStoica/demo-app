@@ -39,11 +39,6 @@ class ApplicationController < Sinatra::Base
   post '/state' do
     hashtag = "#{params[:hashtag]}"
     hashtag_state = {"#{params[:hashtag]}" => true}
-    dt = Time.now.utc
-    dti = dt.to_i
-    if Time.at(dti) == Time.at(dti) + 100
-      hashtag_state = {"#{params[:hashtag]}" => false}
-    end
     write_state(hashtag, hashtag_state, client_database)
   end
 end
