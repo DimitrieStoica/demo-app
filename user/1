@@ -21,14 +21,14 @@ class ApplicationController < Sinatra::Base
 
   get '/' do 
     @data_to_read  = what_data_to_read(client_database)
+    p @data_to_read
     @tweets = show_me_tweets(client_database, @data_to_read)
     erb :index
   end
 
   get '/history' do
-    #hashtag = "#{params[:hashtag]}"
-    hashtag = "alex"
+    hashtag = "#{params[:hashtag]}"
     tweets_to_show = 9
-    get_list_of_tweets_for_hashtag(tweets_to_show, @data_to_read, hashtag, client_database)
+    get_list_of_tweets_for_hashtag(tweets_to_show, @data_to_read, hashtag, client)
   end
 end

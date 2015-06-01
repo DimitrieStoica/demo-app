@@ -1,36 +1,37 @@
 module TwitterHelper
-  def show_me_tweets(client)
+  def show_me_tweets(client, data_to_read)
     data = []
     available_hashtags = read_hashtag_list(client)
-    data_to_read       = what_data_to_read(client)
+    tweets_to_show = 9
     for hashtag in available_hashtags
+      @total_nr_tweets   = get_number_of_tweets_for_hashtag(hashtag, client)
       if get_number_of_tweets_for_hashtag(hashtag, client) != 0
 
-      tweet_list = get_list_of_tweets_for_hashtag(hashtag, client)
-      p tweet_list
-      for tweet_id in tweet_list
-        database_read("#{tweet_id}"[1...-1], "text", client)
-        for element in data_to_read
-          data << {"#{hashtag}" => "#{database_read(tweet_id[1...-1], element, client)}"}
-        end
-      end
-      data.to_json
+        data << {"#{hashtag}" => "#{get_list_of_tweets_for_hashtag(tweets_to_show, data_to_read, hashtag, client)}"}
       else
-       p "I wasn't able to find any tweets for #{hashtag}"
+        p "I wasn't able to find any tweets for #{hashtag}"
+        data << [{"#{hashtag}" => "Empty"}]
       end
     end
     p data.to_json
   end
 
-  def get_list_of_tweets_for_hashtag(hashtag, client)
-    total_nr_tweets = get_number_of_tweets_for_hashtag(hashtag, client)
-    p total_nr_tweets
+  def create_json_output(hashtag, data, function)
+     {"#{hashtag}" => {"#{data}"=> "#{function}"}}
+  end
+
+  def get_list_of_tweets_for_hashtag(tweets_to_show, data_to_read, hashtag, client)
+    p "I have #{@total_nr_tweets} tweets for #{hashtag}"
     tweet_list = []
-    for element in 1..total_nr_tweets
-      tweet_list << database_read("tweets_list_for_" + "#{hashtag}", "tweet_" + "#{element}", client)
+    data = []
+    for element in (@total_nr_tweets - tweets_to_show)..@total_nr_tweets
+      tweet_id = database_read("tweets_list_for_" + "#{hashtag}", "tweet_" + "#{element}", client)
+      for value_to_read in data_to_read
+        tweet_msg = database_read("#{tweet_id}"[1...-1], value_to_read, client)
+        data << tweet_msg
+      end
     end
-    tweet_list
-    p tweet_list
+    data
   end
 
   def get_number_of_tweets_for_hashtag(hashtag, client)
