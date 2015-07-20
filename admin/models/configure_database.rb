@@ -3,7 +3,7 @@ class Connect
      # if (ENV['VCAP_SERVICES']) 
      # ip_list = get_ip_node
      # else
-       ip_list = ["54.191.160.133", "52.11.71.71", "54.149.60.13"]
+       ip_list = ["52.8.116.223", "52.8.117.194", "52.8.126.205"]
      #  end
 
     hosts = []

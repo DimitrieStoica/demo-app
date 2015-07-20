@@ -4,10 +4,6 @@ module DatabaseHelper
   end
 
   def database_read(data_type, data_name, client)
-          p data_type
-          p data_name
-          p client
-          p 'reading from database'
      bucket = client.bucket(data_type)
      obj = bucket.get(data_name)
     # convert_to_json(obj.data)

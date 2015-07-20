@@ -3,22 +3,22 @@ module HashtagHelper
     if is_hashtag_there?(hashtag, client) != true
       p "Adding hashtag #{hashtag} to list"
       total_elements = check_total_number_of_elements(client) + 1
-      database_write("hashtag_list", "total_elements", total_elements, client)
+      database_write("hashtag_list", "total_number_of_elements", total_elements, client)
       database_write("hashtag_list", "hashtag_" + "#{total_elements}", "#{hashtag}",client)
-      write_state(hashtag, hashtag_state, client)
+  #    write_state(hashtag, hashtag_state, client)
     else
       p 'Hash already in the list'
     end
   end
 
-  def read_state_for_hashatgs_list(hashtag, client)
+  def read_state_for_hashatgs_list(client)
     hashtag_list = []
     hashtag_list = check_hashtag_value(client)
-    hashtag_list_to_read = []                                                                                                                                                             [0/1954]
+    hashtag_list_to_read = []          
     for element in hashtag_list
-      hashtag_list_to_read << read_state(element)
+      hashtag_list_to_read << {"#{element}" => "#{read_state(element, client)}"}
     end
-    hashtag_list_to_read
+    hashtag_list_to_read.to_json
   end
 
   def analytics_for_hashtag(params, client)
@@ -27,10 +27,11 @@ module HashtagHelper
   end
 
   def write_state(hashtag, hashtag_state, client)
+    p "Search state for #{hashtag} is #{hashtag_state[hashtag]}"
     database_write("search_state", hashtag, hashtag_state[hashtag], client)
   end
 
-  def read_state(hashtag)
+  def read_state(hashtag, client)
     database_read("search_state", hashtag, client)
   end
 
@@ -45,23 +46,21 @@ module HashtagHelper
   end
 
   def check_hashtag_value(client)
-    if check_total_number_of_elements(client) != false
-      result = []
+    result = []
+    if check_total_number_of_elements(client) != 0
       total_elements = check_total_number_of_elements(client)
-      for element in 0...total_elements
+      for element in 1..total_elements
         result << database_read("hashtag_list", "hashtag_" + "#{element}", client)
       end
-      result
     end
+    result
   end
 
   def check_total_number_of_elements(client)
     begin
       database_read("hashtag_list", "total_number_of_elements", client)
-    rescue StandardError => e
-      p 'No elements in hashtag list'
+    rescue Riak::ProtobuffsFailedRequest => e
       database_write("hashtag_list", "total_number_of_elements", 0, client)
-      false
     end
   end
 end
